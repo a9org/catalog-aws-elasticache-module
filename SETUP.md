@@ -1,79 +1,79 @@
-# Setup Guide - CI/CD e Versionamento Automático
+# Setup Guide - CI/CD and Automated Versioning
 
-Este guia explica como configurar e usar o sistema de CI/CD e versionamento automático do módulo.
+This guide explains how to configure and use the module's CI/CD and automated versioning system.
 
-## 📋 O Que Foi Implementado
+## 📋 What Was Implemented
 
-### 1. Workflows do GitHub Actions
+### 1. GitHub Actions Workflows
 
 - **Release Workflow** (`.github/workflows/release.yml`)
-  - Releases automáticas baseadas em commits
-  - Versionamento semântico automático
-  - Geração de CHANGELOG
-  - Criação de tags e GitHub Releases
+  - Automatic releases based on commits
+  - Automatic semantic versioning
+  - CHANGELOG generation
+  - Tag and GitHub Release creation
 
 - **Validation Workflow** (`.github/workflows/validate.yml`)
-  - Validação de Terraform
-  - Lint de mensagens de commit
-  - Verificação de documentação
+  - Terraform validation
+  - Commit message linting
+  - Documentation verification
 
 - **Tag Validation** (`.github/workflows/tag.yml`)
-  - Validação de formato de tags
-  - Verificação de releases
+  - Tag format validation
+  - Release verification
 
-### 2. Configurações de Versionamento
+### 2. Versioning Configuration
 
 - **Semantic Release** (`.releaserc.json`)
-  - Análise automática de commits
-  - Determinação de versão
-  - Geração de release notes
+  - Automatic commit analysis
+  - Version determination
+  - Release notes generation
 
 - **Commitlint** (`.commitlintrc.json`)
-  - Validação de mensagens de commit
-  - Conformidade com Conventional Commits
+  - Commit message validation
+  - Conventional Commits compliance
 
-### 3. Ferramentas de Desenvolvimento
+### 3. Development Tools
 
 - **Pre-commit Hooks** (`.pre-commit-config.yaml`)
-  - Formatação automática
-  - Validação antes do commit
-  - Lint de arquivos
+  - Automatic formatting
+  - Pre-commit validation
+  - File linting
 
 - **Makefile**
-  - Comandos simplificados
-  - Automação de tarefas comuns
+  - Simplified commands
+  - Common task automation
 
 - **TFLint** (`.tflint.hcl`)
-  - Lint específico para Terraform
-  - Regras AWS
+  - Terraform-specific linting
+  - AWS rules
 
-### 4. Documentação
+### 4. Documentation
 
-- **CONTRIBUTING.md** - Guia de contribuição
-- **RELEASE.md** - Processo de release
-- **CHANGELOG.md** - Histórico de mudanças
-- **VERSION** - Versão atual
+- **CONTRIBUTING.md** - Contribution guide
+- **RELEASE.md** - Release process
+- **CHANGELOG.md** - Change history
+- **VERSION** - Current version
 
 ## 🚀 Quick Start
 
-### Passo 1: Instalar Ferramentas
+### Step 1: Install Tools
 
 ```bash
-# Usando o Makefile
+# Using Makefile
 make install-tools
 
-# Ou manualmente
+# Or manually
 brew install terraform tflint terraform-docs pre-commit
 npm install -g @commitlint/cli @commitlint/config-conventional
 ```
 
-### Passo 2: Configurar Pre-commit
+### Step 2: Configure Pre-commit
 
 ```bash
 pre-commit install
 ```
 
-### Passo 3: Fazer Primeiro Commit
+### Step 3: Make First Commit
 
 ```bash
 git add .
@@ -81,16 +81,16 @@ git commit -m "feat: initial module implementation"
 git push origin main
 ```
 
-### Passo 4: Verificar Release
+### Step 4: Check Release
 
-A release será criada automaticamente! Verifique em:
+The release will be created automatically! Check at:
 - GitHub → Releases
 - CHANGELOG.md
 - VERSION file
 
-## 📝 Como Usar
+## 📝 How to Use
 
-### Fazer Commits Corretos
+### Making Correct Commits
 
 ```bash
 # Feature (minor version)
@@ -105,38 +105,38 @@ git commit -m "feat!: rename variable
 BREAKING CHANGE: vpc_subnets renamed to subnets_pvt"
 ```
 
-### Comandos Úteis
+### Useful Commands
 
 ```bash
-# Validar tudo localmente
+# Validate everything locally
 make ci
 
-# Formatar código
+# Format code
 make fmt
 
-# Validar Terraform
+# Validate Terraform
 make validate
 
-# Gerar documentação
+# Generate documentation
 make docs
 
-# Simular release
+# Simulate release
 make release-dry-run
 ```
 
-## 🔄 Fluxo de Trabalho
+## 🔄 Workflow
 
-1. **Criar Branch**
+1. **Create Branch**
    ```bash
-   git checkout -b feat/nova-funcionalidade
+   git checkout -b feat/new-feature
    ```
 
-2. **Desenvolver**
+2. **Develop**
    ```bash
-   # Fazer mudanças
+   # Make changes
    vim main.tf
    
-   # Validar localmente
+   # Validate locally
    make test
    ```
 
@@ -146,75 +146,75 @@ make release-dry-run
    git commit -m "feat(redis): add new feature"
    ```
 
-4. **Push e PR**
+4. **Push and PR**
    ```bash
-   git push origin feat/nova-funcionalidade
+   git push origin feat/new-feature
    gh pr create
    ```
 
 5. **Merge**
-   - Após aprovação, merge para main
-   - Release criada automaticamente!
+   - After approval, merge to main
+   - Release created automatically!
 
-## 📊 Versionamento
+## 📊 Versioning
 
-### Tipos de Versão
+### Version Types
 
 - **MAJOR** (1.0.0 → 2.0.0): Breaking changes
-- **MINOR** (1.0.0 → 1.1.0): Novas features
+- **MINOR** (1.0.0 → 1.1.0): New features
 - **PATCH** (1.0.0 → 1.0.1): Bug fixes
 
-### Tipos de Commit
+### Commit Types
 
-| Tipo | Descrição | Versão |
-|------|-----------|--------|
-| `feat:` | Nova feature | MINOR |
+| Type | Description | Version |
+|------|-------------|---------|
+| `feat:` | New feature | MINOR |
 | `fix:` | Bug fix | PATCH |
 | `perf:` | Performance | PATCH |
-| `docs:` | Documentação | PATCH |
+| `docs:` | Documentation | PATCH |
 | `BREAKING CHANGE:` | Breaking | MAJOR |
 
 ## 🛠️ Troubleshooting
 
-### Release Não Foi Criada
+### Release Not Created
 
-Verifique:
-1. Commits seguem formato correto?
-2. Há commits que justificam release?
-3. Workflow tem permissões?
+Check:
+1. Do commits follow correct format?
+2. Are there commits that justify a release?
+3. Does workflow have permissions?
 
-### Validação Falhou
+### Validation Failed
 
 ```bash
-# Formatar código
+# Format code
 make fmt
 
-# Validar
+# Validate
 make validate
 
 # Lint
 make lint
 ```
 
-## 📚 Documentação Completa
+## 📚 Complete Documentation
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Como contribuir
-- [RELEASE.md](RELEASE.md) - Processo de release
+- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+- [RELEASE.md](RELEASE.md) - Release process
 - [.github/README.md](.github/README.md) - Workflows
-- [Makefile](Makefile) - Comandos disponíveis
+- [Makefile](Makefile) - Available commands
 
-## 🎯 Próximos Passos
+## 🎯 Next Steps
 
-1. Configure branch protection no GitHub
-2. Adicione secrets se necessário
-3. Customize workflows conforme necessário
-4. Faça seu primeiro commit e veja a mágica acontecer!
+1. Configure branch protection on GitHub
+2. Add secrets if necessary
+3. Customize workflows as needed
+4. Make your first commit and see the magic happen!
 
-## ✅ Checklist de Configuração
+## ✅ Configuration Checklist
 
-- [ ] Ferramentas instaladas
-- [ ] Pre-commit configurado
-- [ ] Branch protection configurada
-- [ ] Primeiro commit feito
-- [ ] Release automática funcionando
-- [ ] Equipe treinada em Conventional Commits
+- [ ] Tools installed
+- [ ] Pre-commit configured
+- [ ] Branch protection configured
+- [ ] First commit made
+- [ ] Automatic release working
+- [ ] Team trained in Conventional Commits
