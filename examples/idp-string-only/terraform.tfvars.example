@@ -1,0 +1,43 @@
+# ============================================
+# IDP String-Only Example - terraform.tfvars
+# ============================================
+# This example shows how to configure the module when your IDP
+# can ONLY pass strings and numbers
+
+# Required variables
+vpc_id         = "vpc-12345678"
+vpc_cidr_block = "10.0.0.0/16"
+name_prefix    = "myapp"
+environment    = "dev"
+engine         = "redis"
+engine_version = "7.0"
+node_type      = "cache.t3.micro"
+parameter_family = "redis7"
+
+# Complex types as JSON strings
+subnets_pvt_json = "[\"subnet-abc123\",\"subnet-def456\",\"subnet-ghi789\"]"
+tags_json = "{\"Project\":\"MyApplication\",\"Team\":\"Platform\",\"Environment\":\"dev\"}"
+
+# Boolean values as strings (use "true" or "false")
+cluster_mode_enabled_str       = "false"
+automatic_failover_enabled_str = "true"
+multi_az_enabled_str           = "true"
+transit_encryption_enabled_str = "true"
+at_rest_encryption_enabled_str = "true"
+auto_minor_version_upgrade_str = "true"
+
+# Number values as strings
+port_str                     = "6379"
+num_node_groups_str          = "1"
+replicas_per_node_group_str  = "2"
+snapshot_retention_limit_str = "7"
+
+# Optional string variables
+description        = "Redis cache for MyApp"
+snapshot_window    = "03:00-05:00"
+maintenance_window = "sun:05:00-sun:07:00"
+
+# Example with cluster mode enabled
+# cluster_mode_enabled_str    = "true"
+# num_node_groups_str         = "3"
+# replicas_per_node_group_str = "2"

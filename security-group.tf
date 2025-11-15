@@ -22,8 +22,8 @@ resource "aws_security_group" "this" {
 
 resource "aws_security_group_rule" "default_ingress" {
   type              = "ingress"
-  from_port         = coalesce(var.port, local.is_redis ? 6379 : 11211)
-  to_port           = coalesce(var.port, local.is_redis ? 6379 : 11211)
+  from_port         = coalesce(local.port_final, local.is_redis ? 6379 : 11211)
+  to_port           = coalesce(local.port_final, local.is_redis ? 6379 : 11211)
   protocol          = "tcp"
   cidr_blocks       = local.default_ingress_cidr
   description       = "Allow access from VPC CIDR"

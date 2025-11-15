@@ -3,7 +3,7 @@
 # ============================================
 
 resource "aws_elasticache_parameter_group" "this" {
-  count = var.create_parameter_group ? 1 : 0
+  count = local.create_parameter_group_final ? 1 : 0
 
   name        = local.parameter_group_name
   family      = var.parameter_family
