@@ -1,0 +1,76 @@
+# Pre-commit hooks for Terraform module
+# Install: brew install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # Terraform formatting and validation
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.86.0
+    hooks:
+      - id: terraform_fmt
+        name: Terraform Format
+        description: Format Terraform files
+        
+      - id: terraform_validate
+        name: Terraform Validate
+        description: Validate Terraform configuration
+        
+      - id: terraform_docs
+        name: Terraform Docs
+        description: Generate Terraform documentation
+        args:
+          - --args=--config=.terraform-docs.yml
+          
+      - id: terraform_tflint
+        name: Terraform Lint
+        description: Lint Terraform files
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+
+  # Commit message validation
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.0.0
+    hooks:
+      - id: conventional-pre-commit
+        name: Conventional Commits
+        description: Validate commit message format
+        stages: [commit-msg]
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+        
+      - id: end-of-file-fixer
+        name: Fix End of Files
+        
+      - id: check-yaml
+        name: Check YAML
+        args: [--safe]
+        
+      - id: check-json
+        name: Check JSON
+        
+      - id: check-merge-conflict
+        name: Check for Merge Conflicts
+        
+      - id: check-added-large-files
+        name: Check for Large Files
+        args: [--maxkb=500]
+        
+      - id: detect-private-key
+        name: Detect Private Keys
+        
+      - id: mixed-line-ending
+        name: Check Line Endings
+        args: [--fix=lf]
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        name: Markdown Lint
+        args: [--fix, --config, .markdownlint.json]
