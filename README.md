@@ -166,6 +166,26 @@ The module handles all other resource creation including:
 - Optional parameter group
 - ElastiCache cluster or replication group
 
+### String Input Support
+
+If your IDP requires all variables as strings, the module supports JSON string inputs for complex types with proper default values. See [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) and [examples/string-input/](examples/string-input/) for details.
+
+```hcl
+module "elasticache" {
+  source = "path/to/module"
+
+  # Standard string variables
+  vpc_id         = "vpc-123"
+  vpc_cidr_block = "10.0.0.0/16"
+  
+  # Complex types as JSON strings (with sensible defaults)
+  subnets_pvt_json = "[\"subnet-abc\",\"subnet-def\"]"
+  tags_json        = "{\"Project\":\"MyApp\"}"
+  # Optional: parameters_json defaults to "[]"
+  # Optional: snapshot_arns_json defaults to "null"
+}
+```
+
 ## Requirements
 
 | Name | Version |
