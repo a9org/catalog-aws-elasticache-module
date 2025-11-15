@@ -57,3 +57,31 @@ resource "aws_elasticache_replication_group" "redis" {
 
   tags = local.common_tags
 }
+
+# ============================================
+# Memcached Cluster
+# ============================================
+
+resource "aws_elasticache_cluster" "memcached" {
+  count = local.is_memcached ? 1 : 0
+
+  cluster_id           = local.cluster_id
+  engine               = "memcached"
+  engine_version       = var.engine_version
+  node_type            = var.node_type
+  num_cache_nodes      = var.num_cache_nodes
+  port                 = coalesce(var.port, 11211)
+  parameter_group_name = local.parameter_group_name
+  subnet_group_name    = aws_elasticache_subnet_group.this.name
+  security_group_ids   = concat([aws_security_group.this.id], var.additional_security_group_ids)
+
+  # Availability zone configuration
+  preferred_availability_zones = var.preferred_availability_zones
+
+  # Maintenance and notification configuration
+  maintenance_window         = var.maintenance_window
+  notification_topic_arn     = var.notification_topic_arn
+  auto_minor_version_upgrade = var.auto_minor_version_upgrade
+
+  tags = local.common_tags
+}
