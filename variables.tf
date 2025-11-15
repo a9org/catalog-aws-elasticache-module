@@ -1,29 +1,4 @@
 # ============================================
-# IDP-Provided Variables
-# ============================================
-
-variable "vpc_id" {
-  description = "VPC ID provided by IDP where ElastiCache resources will be deployed"
-  type        = string
-}
-
-variable "vpc_cidr_block" {
-  description = "VPC CIDR block provided by IDP for default security group ingress rules"
-  type        = string
-}
-
-variable "subnets_pvt" {
-  description = "List of private subnet IDs provided by IDP for ElastiCache subnet group"
-  type        = list(string)
-
-  validation {
-    condition     = length(var.subnets_pvt) > 0
-    error_message = "At least one private subnet must be provided."
-  }
-}
-
-
-# ============================================
 # Core ElastiCache Configuration
 # ============================================
 
@@ -313,11 +288,6 @@ variable "name_prefix" {
   type        = string
 }
 
-variable "environment" {
-  description = "Environment name (e.g., dev, staging, prod)"
-  type        = string
-}
-
 variable "tags" {
   description = "Map of custom tags to apply to all resources"
   type        = map(string)
@@ -348,4 +318,38 @@ variable "parameters" {
     value = string
   }))
   default = []
+}
+
+# ============================================
+# IDP-Provided Variables
+# ============================================
+
+variable "vpc_id" {
+  description = "VPC ID provided by IDP where ElastiCache resources will be deployed"
+  type        = string
+  default     = null
+}
+
+variable "vpc_cidr_block" {
+  description = "VPC CIDR block provided by IDP for default security group ingress rules"
+  type        = string
+  default     = null
+}
+
+variable "subnets_pvt" {
+  description = "List of private subnet IDs provided by IDP for ElastiCache subnet group"
+  type        = list(string)
+  default     = null
+
+  validation {
+    condition     = length(var.subnets_pvt) > 0
+    error_message = "At least one private subnet must be provided."
+  }
+}
+
+
+variable "environment" {
+  description = "Environment name (e.g., dev, staging, prod)"
+  type        = string
+  default     = null
 }
