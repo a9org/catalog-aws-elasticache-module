@@ -36,7 +36,7 @@ resource "aws_security_group_rule" "default_ingress" {
 # ============================================
 
 resource "aws_security_group_rule" "custom_ingress" {
-  for_each = { for idx, rule in var.ingress_rules : idx => rule }
+  for_each = { for idx, rule in local.ingress_rules_final : idx => rule }
 
   type              = "ingress"
   from_port         = each.value.from_port

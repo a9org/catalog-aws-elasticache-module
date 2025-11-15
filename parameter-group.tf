@@ -10,7 +10,7 @@ resource "aws_elasticache_parameter_group" "this" {
   description = "Custom parameter group for ${var.name_prefix}-${var.environment}"
 
   dynamic "parameter" {
-    for_each = var.parameters
+    for_each = local.parameters_final
     content {
       name  = parameter.value.name
       value = parameter.value.value

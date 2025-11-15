@@ -13,7 +13,7 @@ resource "aws_elasticache_replication_group" "redis" {
   port                 = coalesce(var.port, 6379)
   parameter_group_name = local.parameter_group_name
   subnet_group_name    = aws_elasticache_subnet_group.this.name
-  security_group_ids   = concat([aws_security_group.this.id], var.additional_security_group_ids)
+  security_group_ids   = concat([aws_security_group.this.id], local.additional_security_group_ids_final)
 
   # Cluster mode configuration
   num_node_groups         = var.cluster_mode_enabled ? var.num_node_groups : null
@@ -22,7 +22,7 @@ resource "aws_elasticache_replication_group" "redis" {
   # High availability configuration
   automatic_failover_enabled  = var.automatic_failover_enabled
   multi_az_enabled            = var.multi_az_enabled
-  preferred_cache_cluster_azs = var.preferred_availability_zones
+  preferred_cache_cluster_azs = local.preferred_availability_zones_final
 
   # Security configuration
   at_rest_encryption_enabled = var.at_rest_encryption_enabled
@@ -34,7 +34,7 @@ resource "aws_elasticache_replication_group" "redis" {
   snapshot_retention_limit  = var.snapshot_retention_limit
   snapshot_window           = var.snapshot_window
   final_snapshot_identifier = var.final_snapshot_identifier
-  snapshot_arns             = var.snapshot_arns
+  snapshot_arns             = local.snapshot_arns_final
 
   # Maintenance and notification configuration
   maintenance_window         = var.maintenance_window
@@ -46,7 +46,7 @@ resource "aws_elasticache_replication_group" "redis" {
 
   # Log delivery configuration
   dynamic "log_delivery_configuration" {
-    for_each = var.log_delivery_configuration
+    for_each = local.log_delivery_configuration_final
     content {
       destination      = log_delivery_configuration.value.destination
       destination_type = log_delivery_configuration.value.destination_type
@@ -73,10 +73,10 @@ resource "aws_elasticache_cluster" "memcached" {
   port                 = coalesce(var.port, 11211)
   parameter_group_name = local.parameter_group_name
   subnet_group_name    = aws_elasticache_subnet_group.this.name
-  security_group_ids   = concat([aws_security_group.this.id], var.additional_security_group_ids)
+  security_group_ids   = concat([aws_security_group.this.id], local.additional_security_group_ids_final)
 
   # Availability zone configuration
-  preferred_availability_zones = var.preferred_availability_zones
+  preferred_availability_zones = local.preferred_availability_zones_final
 
   # Maintenance and notification configuration
   maintenance_window         = var.maintenance_window

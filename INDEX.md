@@ -9,6 +9,7 @@ Complete navigation guide for AWS ElastiCache Terraform module documentation.
 | [README.md](README.md) | Main module documentation | First read, usage reference |
 | [SETUP.md](SETUP.md) | Initial setup guide | Setting up environment for first time |
 | [CI_CD_SUMMARY.md](CI_CD_SUMMARY.md) | CI/CD implementation summary | Understanding what was implemented |
+| [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) | JSON string input guide | When IDP requires string inputs |
 
 ## 👥 For Contributors
 
@@ -44,6 +45,7 @@ Complete navigation guide for AWS ElastiCache Terraform module documentation.
 | [examples/redis-cluster/README.md](examples/redis-cluster/README.md) | Redis Cluster Mode example | Implementing Redis with sharding |
 | [examples/redis-replication/README.md](examples/redis-replication/README.md) | Redis HA example | Implementing Redis with HA |
 | [examples/memcached/README.md](examples/memcached/README.md) | Memcached example | Implementing Memcached |
+| [examples/string-input/README.md](examples/string-input/README.md) | String input example | When IDP requires JSON strings |
 
 ## ⚙️ Configuration
 

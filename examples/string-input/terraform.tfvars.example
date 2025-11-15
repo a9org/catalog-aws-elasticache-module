@@ -1,0 +1,36 @@
+# ============================================
+# String Input Example - terraform.tfvars
+# ============================================
+# Copy this file to terraform.tfvars and update with your values
+
+# Required variables
+vpc_id         = "vpc-12345678"
+vpc_cidr_block = "10.0.0.0/16"
+name_prefix    = "myapp"
+environment    = "dev"
+
+# JSON string variables (must be valid JSON)
+subnets_pvt_json = "[\"subnet-abc123\",\"subnet-def456\",\"subnet-ghi789\"]"
+
+tags_json = "{\"Project\":\"MyApplication\",\"Team\":\"Platform\",\"Environment\":\"dev\"}"
+
+# Optional: Custom parameters
+parameters_json = "[{\"name\":\"maxmemory-policy\",\"value\":\"allkeys-lru\"},{\"name\":\"timeout\",\"value\":\"300\"}]"
+
+# Optional: Ingress CIDR blocks
+ingress_cidr_blocks_json = "[\"10.0.0.0/16\"]"
+
+# Optional: CloudWatch log exports
+cloudwatch_log_exports_json = "[\"slow-log\",\"engine-log\"]"
+
+# Optional: Preferred availability zones
+preferred_availability_zones_json = "[\"us-east-1a\",\"us-east-1b\",\"us-east-1c\"]"
+
+# Optional: Additional security groups
+additional_security_group_ids_json = "[\"sg-123456\"]"
+
+# Optional: Snapshot ARNs (use "null" if not needed)
+snapshot_arns_json = "null"
+
+# Optional: Log delivery configuration
+log_delivery_configuration_json = "[{\"destination\":\"/aws/elasticache/redis\",\"destination_type\":\"cloudwatch-logs\",\"log_format\":\"json\",\"log_type\":\"slow-log\"}]"
