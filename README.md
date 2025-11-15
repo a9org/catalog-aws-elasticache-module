@@ -166,25 +166,48 @@ The module handles all other resource creation including:
 - Optional parameter group
 - ElastiCache cluster or replication group
 
-### String Input Support
+### String-Only Input Support
 
-If your IDP requires all variables as strings, the module supports JSON string inputs for complex types with proper default values. See [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) and [examples/string-input/](examples/string-input/) for details.
+If your IDP can **ONLY** pass strings and numbers (no booleans, lists, or objects), the module fully supports this limitation through dedicated string input variables:
 
 ```hcl
 module "elasticache" {
   source = "path/to/module"
 
-  # Standard string variables
+  # Standard strings
   vpc_id         = "vpc-123"
   vpc_cidr_block = "10.0.0.0/16"
   
-  # Complex types as JSON strings (with sensible defaults)
+  # Booleans as strings ("true", "false", "1", or "0")
+  cluster_mode_enabled_str           = "true"
+  automatic_failover_enabled_str     = "true"
+  multi_az_enabled_str               = "true"
+  transit_encryption_enabled_str     = "true"
+  at_rest_encryption_enabled_str     = "true"
+  data_tiering_enabled_str           = "false"
+  auto_minor_version_upgrade_str     = "true"
+  create_parameter_group_str         = "false"
+  
+  # Numbers as strings
+  port_str                       = "6379"
+  num_node_groups_str            = "3"
+  replicas_per_node_group_str    = "2"
+  num_cache_nodes_str            = "3"
+  snapshot_retention_limit_str   = "7"
+  
+  # Complex types as JSON strings
   subnets_pvt_json = "[\"subnet-abc\",\"subnet-def\"]"
-  tags_json        = "{\"Project\":\"MyApp\"}"
-  # Optional: parameters_json defaults to "[]"
-  # Optional: snapshot_arns_json defaults to "null"
+  tags_json        = "{\"Project\":\"MyApp\",\"Team\":\"Platform\"}"
 }
 ```
+
+**String Variable Features:**
+- Boolean strings accept: `"true"`, `"false"`, `"1"`, `"0"` (case-insensitive)
+- Number strings are automatically converted to numbers
+- Empty string defaults to the native variable value
+- All string variables have validation to ensure correct format
+
+See [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) and [examples/idp-string-only/](examples/idp-string-only/) for complete details.
 
 ## Requirements
 

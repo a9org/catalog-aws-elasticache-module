@@ -9,16 +9,31 @@ Some platforms or IDPs require all Terraform variables to be passed as strings, 
 The module now supports **dual input modes**:
 
 1. **Native Types** (default) - Use standard Terraform types
-2. **JSON Strings** - Pass complex types as JSON strings
+2. **String Variables** - Pass booleans and numbers as strings with `_str` suffix
+3. **JSON Strings** - Pass complex types as JSON strings with `_json` suffix
 
 ## How It Works
 
-The module includes wrapper variables with `_json` suffix that accept JSON strings. Internally, the module:
+The module includes two types of wrapper variables:
 
-1. Checks if a JSON string variable is provided (non-empty)
-2. If yes, decodes the JSON string to the appropriate type
+### String Variables (`_str` suffix)
+For booleans and numbers that IDPs pass as strings:
+- Accepts string representations: `"true"`, `"false"`, `"1"`, `"0"` for booleans
+- Accepts numeric strings: `"6379"`, `"3"`, `"7"` for numbers
+- Includes validation to ensure correct format
+- Automatically converts to appropriate type internally
+
+### JSON String Variables (`_json` suffix)
+For complex types like lists and maps:
+- Accepts valid JSON strings
+- Decodes JSON to appropriate Terraform type
+- Falls back to native variable if empty
+
+Internally, the module:
+1. Checks if a string/JSON variable is provided (non-empty)
+2. If yes, converts/decodes the string to the appropriate type
 3. If no, uses the native variable
-4. Uses the final decoded/native value throughout the module
+4. Uses the final converted/native value throughout the module
 
 ## Usage
 
@@ -39,7 +54,7 @@ module "elasticache" {
 }
 ```
 
-### Option 2: JSON Strings (For IDPs)
+### Option 2: String Variables (For IDPs - Booleans and Numbers)
 
 ```hcl
 module "elasticache" {
@@ -47,13 +62,47 @@ module "elasticache" {
 
   vpc_id         = "vpc-123"
   vpc_cidr_block = "10.0.0.0/16"
-  subnets_pvt_json = "[\"subnet-abc\",\"subnet-def\"]"
   
-  tags_json = "{\"Project\":\"MyApp\",\"Team\":\"Platform\"}"
+  # Booleans as strings
+  multi_az_enabled_str           = "true"
+  transit_encryption_enabled_str = "true"
+  
+  # Numbers as strings
+  port_str                    = "6379"
+  replicas_per_node_group_str = "2"
+  
+  # Complex types still need JSON
+  subnets_pvt_json = "[\"subnet-abc\",\"subnet-def\"]"
+  tags_json        = "{\"Project\":\"MyApp\",\"Team\":\"Platform\"}"
 }
 ```
 
-## Supported JSON Variables
+## Supported String Variables
+
+### Boolean Variables (as strings)
+
+| Native Variable | String Variable | Accepted Values |
+|----------------|-----------------|-----------------|
+| `cluster_mode_enabled` | `cluster_mode_enabled_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+| `automatic_failover_enabled` | `automatic_failover_enabled_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+| `multi_az_enabled` | `multi_az_enabled_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+| `transit_encryption_enabled` | `transit_encryption_enabled_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+| `at_rest_encryption_enabled` | `at_rest_encryption_enabled_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+| `data_tiering_enabled` | `data_tiering_enabled_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+| `auto_minor_version_upgrade` | `auto_minor_version_upgrade_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+| `create_parameter_group` | `create_parameter_group_str` | `"true"`, `"false"`, `"1"`, `"0"` |
+
+### Number Variables (as strings)
+
+| Native Variable | String Variable | Example |
+|----------------|-----------------|---------|
+| `port` | `port_str` | `"6379"` |
+| `num_node_groups` | `num_node_groups_str` | `"3"` |
+| `replicas_per_node_group` | `replicas_per_node_group_str` | `"2"` |
+| `num_cache_nodes` | `num_cache_nodes_str` | `"3"` |
+| `snapshot_retention_limit` | `snapshot_retention_limit_str` | `"7"` |
+
+### Complex Type Variables (as JSON strings)
 
 | Native Variable | JSON String Variable | Type |
 |----------------|---------------------|------|
@@ -67,6 +116,31 @@ module "elasticache" {
 | `log_delivery_configuration` | `log_delivery_configuration_json` | `list(object)` |
 | `preferred_availability_zones` | `preferred_availability_zones_json` | `list(string)` |
 | `additional_security_group_ids` | `additional_security_group_ids_json` | `list(string)` |
+
+## String Format Examples
+
+### Boolean Values as Strings
+
+```hcl
+# All of these mean TRUE
+cluster_mode_enabled_str = "true"
+cluster_mode_enabled_str = "True"  # Case insensitive
+cluster_mode_enabled_str = "1"
+
+# All of these mean FALSE
+cluster_mode_enabled_str = "false"
+cluster_mode_enabled_str = "False"  # Case insensitive
+cluster_mode_enabled_str = "0"
+```
+
+### Number Values as Strings
+
+```hcl
+port_str = "6379"
+num_node_groups_str = "3"
+replicas_per_node_group_str = "2"
+snapshot_retention_limit_str = "7"
+```
 
 ## JSON Format Examples
 
@@ -106,14 +180,14 @@ snapshot_arns_json = "null"
 
 ### Files Added
 
-1. **wrapper-variables.tf** - Defines `_json` suffix variables
-2. **wrapper-locals.tf** - Removed (logic moved to locals.tf)
-3. **locals.tf** - Updated with JSON decoding logic
-4. **examples/string-input/** - Complete example
+1. **idp-variables.tf** - Defines `_str` suffix variables for booleans and numbers
+2. **wrapper-variables.tf** - Defines `_json` suffix variables for complex types
+3. **examples/idp-string-only/** - Complete example for IDP integration
+4. **examples/string-input/** - Complete example for JSON string inputs
 
 ### Files Modified
 
-1. **locals.tf** - Added JSON decoding with fallback to native variables
+1. **locals.tf** - Added string-to-boolean/number conversion and JSON decoding logic
 2. **main.tf** - Updated to use `_final` local variables
 3. **subnet-group.tf** - Updated to use `_final` local variables
 4. **security-group.tf** - Updated to use `_final` local variables
