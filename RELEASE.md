@@ -1,49 +1,49 @@
 # Release Process
 
-Este documento descreve o processo automatizado de releases para o módulo AWS ElastiCache Terraform.
+This document describes the automated release process for the AWS ElastiCache Terraform module.
 
-## Visão Geral
+## Overview
 
-O projeto utiliza [Semantic Release](https://semantic-release.gitbook.io/) para automatizar completamente o processo de versionamento e criação de releases baseado em [Conventional Commits](https://www.conventionalcommits.org/).
+The project uses [Semantic Release](https://semantic-release.gitbook.io/) to fully automate the versioning and release creation process based on [Conventional Commits](https://www.conventionalcommits.org/).
 
-## Como Funciona
+## How It Works
 
-### 1. Commit na Branch Main
+### 1. Commit to Main Branch
 
-Quando um commit é feito (ou PR é merged) na branch `main`, o workflow de release é acionado automaticamente.
+When a commit is made (or PR is merged) to the `main` branch, the release workflow is automatically triggered.
 
-### 2. Análise de Commits
+### 2. Commit Analysis
 
-O Semantic Release analisa todos os commits desde a última release para determinar:
+Semantic Release analyzes all commits since the last release to determine:
 
-- **Se uma nova release é necessária**
-- **Qual tipo de versão** (major, minor, patch)
-- **Quais mudanças incluir** nas release notes
+- **If a new release is needed**
+- **What type of version** (major, minor, patch)
+- **Which changes to include** in release notes
 
-### 3. Determinação da Versão
+### 3. Version Determination
 
-A versão é determinada automaticamente baseada nos tipos de commit:
+The version is automatically determined based on commit types:
 
-| Tipo de Commit | Exemplo | Versão Bump | Versão Resultante |
-|----------------|---------|-------------|-------------------|
+| Commit Type | Example | Version Bump | Resulting Version |
+|-------------|---------|--------------|-------------------|
 | `feat:` | `feat(redis): add cluster mode` | MINOR | 1.0.0 → 1.1.0 |
 | `fix:` | `fix(security): correct CIDR validation` | PATCH | 1.0.0 → 1.0.1 |
 | `perf:` | `perf(redis): optimize connection pooling` | PATCH | 1.0.0 → 1.0.1 |
 | `BREAKING CHANGE:` | `feat!: rename vpc_subnets variable` | MAJOR | 1.0.0 → 2.0.0 |
 
-### 4. Geração de Artefatos
+### 4. Artifact Generation
 
-O processo gera automaticamente:
+The process automatically generates:
 
-- **Tag Git**: `v1.2.3`
-- **GitHub Release**: Com release notes formatadas
-- **CHANGELOG.md**: Atualizado com as mudanças
-- **VERSION**: Arquivo com o número da versão
-- **Assets**: Arquivos Terraform anexados à release
+- **Git Tag**: `v1.2.3`
+- **GitHub Release**: With formatted release notes
+- **CHANGELOG.md**: Updated with changes
+- **VERSION**: File with version number
+- **Assets**: Terraform files attached to release
 
-### 5. Commit de Release
+### 5. Release Commit
 
-Um commit automático é criado com:
+An automatic commit is created with:
 ```
 chore(release): 1.2.3 [skip ci]
 
@@ -56,9 +56,9 @@ chore(release): 1.2.3 [skip ci]
 * fix critical bug ([def456])
 ```
 
-## Formato de Commits
+## Commit Format
 
-### Estrutura Básica
+### Basic Structure
 
 ```
 <type>(<scope>): <subject>
@@ -68,7 +68,7 @@ chore(release): 1.2.3 [skip ci]
 <footer>
 ```
 
-### Tipos de Commit
+### Commit Types
 
 #### Features (Minor Version)
 ```bash
@@ -103,31 +103,31 @@ git commit -m "perf(redis): optimize parameter group creation"
 git commit -m "refactor(locals): simplify naming logic"
 ```
 
-#### Outros (Sem Release)
+#### Others (No Release)
 ```bash
 git commit -m "chore: update dependencies"
 git commit -m "test: add validation tests"
 git commit -m "ci: update workflow configuration"
 ```
 
-## Scopes Recomendados
+## Recommended Scopes
 
-Use scopes para indicar a área afetada:
+Use scopes to indicate the affected area:
 
-- `redis`: Funcionalidades específicas do Redis
-- `memcached`: Funcionalidades específicas do Memcached
+- `redis`: Redis-specific functionality
+- `memcached`: Memcached-specific functionality
 - `security`: Security groups, encryption
 - `backup`: Snapshots, backups
 - `monitoring`: CloudWatch, logs, SNS
 - `network`: VPC, subnets, security groups
-- `variables`: Variáveis de entrada
-- `outputs`: Outputs do módulo
-- `examples`: Exemplos de configuração
-- `docs`: Documentação
+- `variables`: Input variables
+- `outputs`: Module outputs
+- `examples`: Configuration examples
+- `docs`: Documentation
 
-## Exemplos de Release Notes
+## Release Notes Examples
 
-### Release Minor (1.0.0 → 1.1.0)
+### Minor Release (1.0.0 → 1.1.0)
 
 ```markdown
 # [1.1.0](https://github.com/.../compare/v1.0.0...v1.1.0) (2024-01-15)
@@ -142,7 +142,7 @@ Use scopes para indicar a área afetada:
 * **security**: correct CIDR block validation logic ([ghi789](https://github.com/.../commit/ghi789))
 ```
 
-### Release Major (1.0.0 → 2.0.0)
+### Major Release (1.0.0 → 2.0.0)
 
 ```markdown
 # [2.0.0](https://github.com/.../compare/v1.0.0...v2.0.0) (2024-01-15)
@@ -156,15 +156,15 @@ Use scopes para indicar a área afetada:
 * **variables**: rename vpc_subnets to subnets_pvt for IDP alignment ([abc123](https://github.com/.../commit/abc123))
 ```
 
-## Workflow de Desenvolvimento
+## Development Workflow
 
-### 1. Criar Branch de Feature
+### 1. Create Feature Branch
 
 ```bash
 git checkout -b feat/add-data-tiering
 ```
 
-### 2. Fazer Commits Seguindo a Convenção
+### 2. Make Commits Following Convention
 
 ```bash
 git add .
@@ -176,15 +176,15 @@ This allows automatic data management between memory and SSD.
 Closes #123"
 ```
 
-### 3. Criar Pull Request
+### 3. Create Pull Request
 
-- O PR será validado automaticamente
-- Commits serão verificados pelo commitlint
-- Terraform será validado
+- PR will be automatically validated
+- Commits will be checked by commitlint
+- Terraform will be validated
 
-### 4. Merge para Main
+### 4. Merge to Main
 
-Após aprovação, merge para `main`:
+After approval, merge to `main`:
 
 ```bash
 git checkout main
@@ -192,28 +192,28 @@ git merge feat/add-data-tiering
 git push origin main
 ```
 
-### 5. Release Automática
+### 5. Automatic Release
 
-O GitHub Actions irá:
-1. Analisar os commits
-2. Determinar a nova versão (1.0.0 → 1.1.0)
-3. Gerar CHANGELOG.md
-4. Criar tag `v1.1.0`
-5. Criar GitHub Release
-6. Fazer commit das mudanças
+GitHub Actions will:
+1. Analyze commits
+2. Determine new version (1.0.0 → 1.1.0)
+3. Generate CHANGELOG.md
+4. Create tag `v1.1.0`
+5. Create GitHub Release
+6. Commit changes
 
-## Versionamento Semântico
+## Semantic Versioning
 
 ### MAJOR (X.0.0)
 
-Mudanças incompatíveis com versões anteriores:
+Breaking changes incompatible with previous versions:
 
-- Remoção de variáveis
-- Renomeação de variáveis obrigatórias
-- Mudanças em outputs que quebram integrações
-- Alterações em comportamento padrão que afetam recursos existentes
+- Variable removal
+- Renaming required variables
+- Output changes that break integrations
+- Default behavior changes affecting existing resources
 
-**Exemplo:**
+**Example:**
 ```
 feat(variables)!: remove deprecated vpc_subnets variable
 
@@ -223,14 +223,14 @@ Use subnets_pvt instead.
 
 ### MINOR (0.X.0)
 
-Novas funcionalidades compatíveis com versões anteriores:
+New features compatible with previous versions:
 
-- Novas variáveis opcionais
-- Novos outputs
-- Novos recursos opcionais
-- Melhorias de funcionalidade
+- New optional variables
+- New outputs
+- New optional resources
+- Feature improvements
 
-**Exemplo:**
+**Example:**
 ```
 feat(redis): add support for Redis 7.1
 
@@ -240,14 +240,14 @@ All existing configurations remain compatible.
 
 ### PATCH (0.0.X)
 
-Correções de bugs e melhorias compatíveis:
+Bug fixes and compatible improvements:
 
-- Correções de bugs
-- Melhorias de performance
-- Atualizações de documentação
-- Refatorações internas
+- Bug fixes
+- Performance improvements
+- Documentation updates
+- Internal refactoring
 
-**Exemplo:**
+**Example:**
 ```
 fix(security): correct default security group rules
 
@@ -255,24 +255,24 @@ Fix issue where default ingress rules were not properly applied
 when ingress_cidr_blocks was not specified.
 ```
 
-## Releases Especiais
+## Special Releases
 
 ### Pre-releases
 
-Para criar pre-releases (beta, alpha, rc):
+To create pre-releases (beta, alpha, rc):
 
 ```bash
-# Criar branch de pre-release
+# Create pre-release branch
 git checkout -b beta
 
-# Fazer commits normalmente
+# Make commits normally
 git commit -m "feat(redis): add experimental feature"
 
-# Push para branch beta
+# Push to beta branch
 git push origin beta
 ```
 
-Configure no `.releaserc.json`:
+Configure in `.releaserc.json`:
 ```json
 {
   "branches": [
@@ -283,30 +283,30 @@ Configure no `.releaserc.json`:
 }
 ```
 
-Isso gerará versões como: `v1.1.0-beta.1`
+This will generate versions like: `v1.1.0-beta.1`
 
 ### Hotfixes
 
-Para hotfixes urgentes:
+For urgent hotfixes:
 
 ```bash
-# Criar branch de hotfix
+# Create hotfix branch
 git checkout -b hotfix/critical-bug
 
-# Fazer commit de fix
+# Make fix commit
 git commit -m "fix(security): patch critical vulnerability"
 
-# Merge direto para main
+# Merge directly to main
 git checkout main
 git merge hotfix/critical-bug
 git push origin main
 ```
 
-A release será criada automaticamente como patch: `1.0.0 → 1.0.1`
+Release will be created automatically as patch: `1.0.0 → 1.0.1`
 
-## Verificação de Releases
+## Release Verification
 
-### Verificar Última Release
+### Check Latest Release
 
 ```bash
 # Via GitHub CLI
@@ -316,13 +316,13 @@ gh release view
 git describe --tags --abbrev=0
 ```
 
-### Verificar CHANGELOG
+### Check CHANGELOG
 
 ```bash
 cat CHANGELOG.md
 ```
 
-### Verificar VERSION
+### Check VERSION
 
 ```bash
 cat VERSION
@@ -330,36 +330,36 @@ cat VERSION
 
 ## Troubleshooting
 
-### Release Não Foi Criada
+### Release Not Created
 
-Verifique se:
-1. Os commits seguem o formato Conventional Commits
-2. Há commits que justificam uma release (feat, fix, etc.)
-3. O workflow tem permissões corretas
-4. O GITHUB_TOKEN está configurado
+Check if:
+1. Commits follow Conventional Commits format
+2. There are commits that justify a release (feat, fix, etc.)
+3. Workflow has correct permissions
+4. GITHUB_TOKEN is configured
 
-### Versão Incorreta
+### Incorrect Version
 
-Se a versão gerada está incorreta:
-1. Verifique o tipo de commit usado
-2. Confirme se BREAKING CHANGE está no footer (não no subject)
-3. Revise as regras em `.releaserc.json`
+If generated version is incorrect:
+1. Check commit type used
+2. Confirm BREAKING CHANGE is in footer (not subject)
+3. Review rules in `.releaserc.json`
 
-### Commits Não Aparecem no CHANGELOG
+### Commits Not Appearing in CHANGELOG
 
-Commits com tipos `chore`, `test`, `build`, `ci` são ocultados por padrão.
-Use `feat`, `fix`, `docs`, `perf`, ou `refactor` para aparecer no CHANGELOG.
+Commits with types `chore`, `test`, `build`, `ci` are hidden by default.
+Use `feat`, `fix`, `docs`, `perf`, or `refactor` to appear in CHANGELOG.
 
-## Boas Práticas
+## Best Practices
 
-1. **Commits Atômicos**: Um commit = uma mudança lógica
-2. **Mensagens Descritivas**: Explique o "porquê", não apenas o "o quê"
-3. **Scope Consistente**: Use os mesmos scopes em todo o projeto
-4. **Breaking Changes Claros**: Documente impacto e migração
-5. **Teste Antes do Merge**: Valide localmente antes de fazer PR
-6. **Squash Commits**: Considere squash de commits de feature antes do merge
+1. **Atomic Commits**: One commit = one logical change
+2. **Descriptive Messages**: Explain "why", not just "what"
+3. **Consistent Scope**: Use same scopes throughout project
+4. **Clear Breaking Changes**: Document impact and migration
+5. **Test Before Merge**: Validate locally before creating PR
+6. **Squash Commits**: Consider squashing feature commits before merge
 
-## Referências
+## References
 
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Semantic Versioning](https://semver.org/)

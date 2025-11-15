@@ -1,8 +1,8 @@
 # Workflow Diagram
 
-Diagrama visual do fluxo de CI/CD e releases automáticas.
+Visual diagram of CI/CD flow and automated releases.
 
-## Fluxo Completo
+## Complete Flow
 
 ```mermaid
 graph TD
@@ -43,7 +43,7 @@ graph TD
     V --> W[Release Complete!]
 ```
 
-## Fluxo de Validação (PR)
+## Validation Flow (PR)
 
 ```mermaid
 sequenceDiagram
@@ -71,7 +71,7 @@ sequenceDiagram
     GH-->>Dev: Ready for Review
 ```
 
-## Fluxo de Release (Main)
+## Release Flow (Main)
 
 ```mermaid
 sequenceDiagram
@@ -99,7 +99,7 @@ sequenceDiagram
     GH-->>Dev: 🎉 Release v1.2.3 Created!
 ```
 
-## Tipos de Commit e Impacto
+## Commit Types and Impact
 
 ```mermaid
 graph LR
@@ -120,7 +120,7 @@ graph LR
     F --> J[No Version Change]
 ```
 
-## Estados do Workflow
+## Workflow States
 
 ```mermaid
 stateDiagram-v2

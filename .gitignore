@@ -1,6 +1,6 @@
 # Local .terraform directories
 .terraform/
-
+.terraform.lock.hcl
 # .tfstate files
 *.tfstate
 *.tfstate.*
@@ -36,4 +36,27 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# Kiro IDE
 .kiro
+.kiro/
+
+# Node modules (for semantic-release if run locally)
+node_modules/
+package-lock.json
+package.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
+*.log

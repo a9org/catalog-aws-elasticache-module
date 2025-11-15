@@ -1,8 +1,8 @@
 # Quick Reference - Conventional Commits
 
-Referência rápida para mensagens de commit.
+Quick reference for commit messages.
 
-## Formato Básico
+## Basic Format
 
 ```
 <type>(<scope>): <subject>
@@ -12,33 +12,33 @@ Referência rápida para mensagens de commit.
 <footer>
 ```
 
-## Tipos Comuns
+## Common Types
 
-| Tipo | Quando Usar | Versão |
-|------|-------------|--------|
-| `feat` | Nova funcionalidade | MINOR |
-| `fix` | Correção de bug | PATCH |
-| `docs` | Apenas documentação | PATCH |
-| `perf` | Melhoria de performance | PATCH |
-| `refactor` | Refatoração de código | PATCH |
-| `test` | Adicionar/atualizar testes | - |
-| `chore` | Manutenção/tarefas | - |
-| `ci` | Mudanças em CI/CD | - |
+| Type | When to Use | Version |
+|------|-------------|---------|
+| `feat` | New functionality | MINOR |
+| `fix` | Bug fix | PATCH |
+| `docs` | Documentation only | PATCH |
+| `perf` | Performance improvement | PATCH |
+| `refactor` | Code refactoring | PATCH |
+| `test` | Add/update tests | - |
+| `chore` | Maintenance/tasks | - |
+| `ci` | CI/CD changes | - |
 
-## Scopes Sugeridos
+## Suggested Scopes
 
-- `redis` - Redis específico
-- `memcached` - Memcached específico
-- `security` - Segurança
+- `redis` - Redis specific
+- `memcached` - Memcached specific
+- `security` - Security
 - `backup` - Backups
-- `monitoring` - Monitoramento
-- `network` - Rede
-- `variables` - Variáveis
+- `monitoring` - Monitoring
+- `network` - Network
+- `variables` - Variables
 - `outputs` - Outputs
-- `examples` - Exemplos
-- `docs` - Documentação
+- `examples` - Examples
+- `docs` - Documentation
 
-## Exemplos Rápidos
+## Quick Examples
 
 ### Feature
 ```bash
@@ -57,23 +57,23 @@ git commit -m "feat!: rename variable
 BREAKING CHANGE: vpc_subnets → subnets_pvt"
 ```
 
-### Documentação
+### Documentation
 ```bash
 git commit -m "docs(readme): update examples"
 ```
 
-## Comandos Úteis
+## Useful Commands
 
 ```bash
-# Validar último commit
+# Validate last commit
 make commit-check
 
-# Formatar código
+# Format code
 make fmt
 
-# Validar tudo
+# Validate everything
 make ci
 
-# Simular release
+# Simulate release
 make release-dry-run
 ```

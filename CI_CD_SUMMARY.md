@@ -1,279 +1,279 @@
-# Resumo da Implementação de CI/CD
+# CI/CD Implementation Summary
 
-## 🎯 Objetivo
+## 🎯 Objective
 
-Implementar um sistema completo de CI/CD com versionamento automático e releases baseadas em Conventional Commits para o módulo AWS ElastiCache Terraform.
+Implement a complete CI/CD system with automated versioning and releases based on Conventional Commits for the AWS ElastiCache Terraform module.
 
-## ✅ O Que Foi Implementado
+## ✅ What Was Implemented
 
 ### 1. GitHub Actions Workflows (3 workflows)
 
 #### a) Release Workflow (`.github/workflows/release.yml`)
-- **Trigger**: Push/merge para branch `main`
-- **Função**: Criar releases automáticas
-- **Processo**:
-  - Analisa commits desde última release
-  - Determina versão (major/minor/patch)
-  - Gera CHANGELOG.md
-  - Cria tag Git (v1.2.3)
-  - Cria GitHub Release com assets
-  - Faz commit das mudanças
+- **Trigger**: Push/merge to `main` branch
+- **Function**: Create automatic releases
+- **Process**:
+  - Analyzes commits since last release
+  - Determines version (major/minor/patch)
+  - Generates CHANGELOG.md
+  - Creates Git tag (v1.2.3)
+  - Creates GitHub Release with assets
+  - Commits changes
 
 #### b) Validation Workflow (`.github/workflows/validate.yml`)
-- **Trigger**: Pull Requests e pushes em branches
-- **Função**: Validar código antes do merge
-- **Validações**:
+- **Trigger**: Pull Requests and pushes to branches
+- **Function**: Validate code before merge
+- **Validations**:
   - Terraform format check
   - Terraform validate
-  - Validação de exemplos
-  - Lint de mensagens de commit
-  - Verificação de documentação
+  - Example validation
+  - Commit message linting
+  - Documentation verification
 
 #### c) Tag Validation (`.github/workflows/tag.yml`)
-- **Trigger**: Push de tags
-- **Função**: Validar formato de tags de release
-- **Validações**:
-  - Formato de tag (v1.2.3)
-  - Validação do módulo
+- **Trigger**: Tag pushes
+- **Function**: Validate release tag format
+- **Validations**:
+  - Tag format (v1.2.3)
+  - Module validation
 
-### 2. Configurações de Versionamento
+### 2. Versioning Configuration
 
 #### Semantic Release (`.releaserc.json`)
-- Análise automática de commits
-- Regras de versionamento:
+- Automatic commit analysis
+- Versioning rules:
   - `feat:` → MINOR (1.0.0 → 1.1.0)
   - `fix:` → PATCH (1.0.0 → 1.0.1)
   - `BREAKING CHANGE:` → MAJOR (1.0.0 → 2.0.0)
-- Geração de CHANGELOG
-- Criação de releases no GitHub
+- CHANGELOG generation
+- GitHub release creation
 
 #### Commitlint (`.commitlintrc.json`)
-- Validação de mensagens de commit
-- Conformidade com Conventional Commits
-- Regras de formato e tamanho
+- Commit message validation
+- Conventional Commits compliance
+- Format and size rules
 
-### 3. Ferramentas de Desenvolvimento
+### 3. Development Tools
 
 #### Pre-commit Hooks (`.pre-commit-config.yaml`)
-- Terraform format automático
+- Automatic Terraform formatting
 - Terraform validate
 - Terraform docs
 - Terraform lint (tflint)
-- Validação de commits
-- Checks gerais (trailing whitespace, YAML, JSON)
+- Commit validation
+- General checks (trailing whitespace, YAML, JSON)
 - Markdown lint
 
 #### Makefile
-Comandos disponíveis:
-- `make install-tools` - Instalar ferramentas
-- `make fmt` - Formatar código
-- `make validate` - Validar Terraform
-- `make lint` - Lint com tflint
-- `make test` - Executar todos os testes
-- `make ci` - Executar checks de CI localmente
-- `make docs` - Gerar documentação
-- `make release-dry-run` - Simular release
+Available commands:
+- `make install-tools` - Install tools
+- `make fmt` - Format code
+- `make validate` - Validate Terraform
+- `make lint` - Lint with tflint
+- `make test` - Run all tests
+- `make ci` - Run CI checks locally
+- `make docs` - Generate documentation
+- `make release-dry-run` - Simulate release
 
 #### TFLint (`.tflint.hcl`)
-- Regras específicas para Terraform
-- Plugin AWS
-- Validação de naming conventions
-- Verificação de documentação
+- Terraform-specific rules
+- AWS plugin
+- Naming convention validation
+- Documentation verification
 
 #### Terraform Docs (`.terraform-docs.yml`)
-- Geração automática de documentação
-- Formato markdown table
-- Injeção no README.md
+- Automatic documentation generation
+- Markdown table format
+- README.md injection
 
-### 4. Templates do GitHub
+### 4. GitHub Templates
 
 #### Pull Request Template
-- Descrição estruturada
-- Checklist de validação
-- Seções para breaking changes
-- Links para issues
+- Structured description
+- Validation checklist
+- Breaking changes sections
+- Issue links
 
 #### Issue Templates
-- **Bug Report**: Template para reportar bugs
-- **Feature Request**: Template para solicitar features
+- **Bug Report**: Template for reporting bugs
+- **Feature Request**: Template for requesting features
 
-### 5. Documentação Completa
+### 5. Complete Documentation
 
-#### Documentos Criados:
+#### Created Documents:
 1. **CONTRIBUTING.md** (6.3 KB)
-   - Guia completo de contribuição
-   - Convenção de commits
-   - Processo de PR
-   - Workflow de desenvolvimento
+   - Complete contribution guide
+   - Commit convention
+   - PR process
+   - Development workflow
 
 2. **RELEASE.md** (8.7 KB)
-   - Processo de release detalhado
-   - Exemplos de commits
-   - Versionamento semântico
+   - Detailed release process
+   - Commit examples
+   - Semantic versioning
    - Troubleshooting
 
 3. **SETUP.md** (3.2 KB)
-   - Guia de configuração inicial
+   - Initial setup guide
    - Quick start
-   - Comandos úteis
+   - Useful commands
    - Checklist
 
 4. **CHANGELOG.md**
-   - Histórico de mudanças
-   - Gerado automaticamente
+   - Change history
+   - Automatically generated
 
 5. **VERSION**
-   - Versão atual do módulo
+   - Current module version
 
 6. **.github/README.md** (7.8 KB)
-   - Documentação dos workflows
-   - Configuração de secrets
+   - Workflow documentation
+   - Secrets configuration
    - Troubleshooting
 
 7. **.github/WORKFLOW_DIAGRAM.md**
-   - Diagramas Mermaid do fluxo
-   - Visualização do processo
+   - Mermaid flow diagrams
+   - Process visualization
 
 8. **.github/QUICK_REFERENCE.md**
-   - Referência rápida de commits
-   - Comandos úteis
+   - Quick commit reference
+   - Useful commands
 
 9. **.github/COMMIT_EXAMPLES.md**
-   - Exemplos práticos de commits
+   - Practical commit examples
 
-### 6. Arquivos de Configuração
+### 6. Configuration Files
 
-- `.gitattributes` - Normalização de line endings
-- `.markdownlint.json` - Regras de markdown
-- `.pre-commit-config.yaml` - Hooks de pre-commit
-- `.commitlintrc.json` - Regras de commit
-- `.releaserc.json` - Configuração do Semantic Release
-- `.tflint.hcl` - Configuração do TFLint
-- `.terraform-docs.yml` - Configuração do Terraform Docs
+- `.gitattributes` - Line ending normalization
+- `.markdownlint.json` - Markdown rules
+- `.pre-commit-config.yaml` - Pre-commit hooks
+- `.commitlintrc.json` - Commit rules
+- `.releaserc.json` - Semantic Release configuration
+- `.tflint.hcl` - TFLint configuration
+- `.terraform-docs.yml` - Terraform Docs configuration
 
-### 7. Melhorias no README
+### 7. README Improvements
 
-- Badges de status
-- Seção de versionamento
-- Seção de contribuição
-- Links para documentação
+- Status badges
+- Versioning section
+- Contribution section
+- Documentation links
 
-## 🔄 Fluxo de Trabalho
+## 🔄 Workflow
 
-### Para Desenvolvedores:
+### For Developers:
 
-1. **Criar branch de feature**
+1. **Create feature branch**
    ```bash
-   git checkout -b feat/nova-funcionalidade
+   git checkout -b feat/new-feature
    ```
 
-2. **Desenvolver e commitar**
+2. **Develop and commit**
    ```bash
    git commit -m "feat(redis): add new feature"
    ```
 
-3. **Criar Pull Request**
-   - Validações automáticas executam
-   - Commits são verificados
-   - Terraform é validado
+3. **Create Pull Request**
+   - Automatic validations run
+   - Commits are verified
+   - Terraform is validated
 
-4. **Merge para main**
-   - Release automática é criada
-   - Versão é determinada pelos commits
-   - CHANGELOG é atualizado
+4. **Merge to main**
+   - Automatic release is created
+   - Version is determined by commits
+   - CHANGELOG is updated
 
-### Tipos de Commit e Impacto:
+### Commit Types and Impact:
 
-| Commit | Exemplo | Versão Anterior | Nova Versão |
-|--------|---------|-----------------|-------------|
+| Commit | Example | Previous Version | New Version |
+|--------|---------|------------------|-------------|
 | `feat:` | `feat(redis): add cluster mode` | 1.0.0 | 1.1.0 |
 | `fix:` | `fix(security): correct validation` | 1.0.0 | 1.0.1 |
 | `BREAKING:` | `feat!: rename variable` | 1.0.0 | 2.0.0 |
 | `docs:` | `docs: update readme` | 1.0.0 | 1.0.1 |
 | `chore:` | `chore: update deps` | 1.0.0 | 1.0.0 |
 
-## 📊 Estatísticas
+## 📊 Statistics
 
 - **Workflows**: 3
-- **Documentos**: 9
-- **Arquivos de Config**: 7
+- **Documents**: 9
+- **Config Files**: 7
 - **Templates**: 3
-- **Linhas de Código**: ~2000+
-- **Comandos Make**: 15+
+- **Lines of Code**: ~2000+
+- **Make Commands**: 15+
 
-## 🎓 Boas Práticas Implementadas
+## 🎓 Best Practices Implemented
 
-1. ✅ **Versionamento Semântico** - Seguindo SemVer 2.0.0
-2. ✅ **Conventional Commits** - Padronização de mensagens
-3. ✅ **Automação Completa** - Zero intervenção manual
-4. ✅ **Validação Contínua** - Checks em PRs
-5. ✅ **Documentação Automática** - CHANGELOG gerado
-6. ✅ **Pre-commit Hooks** - Validação local
-7. ✅ **Templates** - Padronização de PRs e Issues
-8. ✅ **Makefile** - Comandos simplificados
-9. ✅ **Badges** - Status visual no README
-10. ✅ **Diagramas** - Visualização do fluxo
+1. ✅ **Semantic Versioning** - Following SemVer 2.0.0
+2. ✅ **Conventional Commits** - Message standardization
+3. ✅ **Complete Automation** - Zero manual intervention
+4. ✅ **Continuous Validation** - Checks on PRs
+5. ✅ **Automatic Documentation** - Generated CHANGELOG
+6. ✅ **Pre-commit Hooks** - Local validation
+7. ✅ **Templates** - PR and Issue standardization
+8. ✅ **Makefile** - Simplified commands
+9. ✅ **Badges** - Visual status in README
+10. ✅ **Diagrams** - Flow visualization
 
-## 🚀 Benefícios
+## 🚀 Benefits
 
-### Para o Time:
-- ✅ Processo de release padronizado
-- ✅ Menos erros humanos
-- ✅ Histórico claro de mudanças
-- ✅ Versionamento consistente
-- ✅ Documentação sempre atualizada
+### For the Team:
+- ✅ Standardized release process
+- ✅ Fewer human errors
+- ✅ Clear change history
+- ✅ Consistent versioning
+- ✅ Always updated documentation
 
-### Para o Projeto:
-- ✅ Releases automáticas e confiáveis
-- ✅ CHANGELOG gerado automaticamente
-- ✅ Tags Git criadas automaticamente
-- ✅ GitHub Releases com assets
-- ✅ Validação antes do merge
+### For the Project:
+- ✅ Automatic and reliable releases
+- ✅ Automatically generated CHANGELOG
+- ✅ Automatically created Git tags
+- ✅ GitHub Releases with assets
+- ✅ Pre-merge validation
 
-### Para Contribuidores:
-- ✅ Guias claros de contribuição
-- ✅ Templates para PRs e Issues
-- ✅ Validação local com pre-commit
-- ✅ Feedback imediato em PRs
-- ✅ Comandos simplificados (Makefile)
+### For Contributors:
+- ✅ Clear contribution guides
+- ✅ PR and Issue templates
+- ✅ Local validation with pre-commit
+- ✅ Immediate feedback on PRs
+- ✅ Simplified commands (Makefile)
 
-## 📝 Próximos Passos Recomendados
+## 📝 Recommended Next Steps
 
-1. **Configurar Branch Protection**
+1. **Configure Branch Protection**
    - Require PR reviews
    - Require status checks
    - Require up-to-date branches
 
-2. **Treinar o Time**
+2. **Train the Team**
    - Conventional Commits
-   - Fluxo de trabalho
-   - Comandos do Makefile
+   - Workflow
+   - Makefile commands
 
-3. **Primeiro Release**
-   - Fazer commit inicial
-   - Verificar release automática
-   - Validar CHANGELOG
+3. **First Release**
+   - Make initial commit
+   - Verify automatic release
+   - Validate CHANGELOG
 
-4. **Monitorar**
-   - Acompanhar primeiras releases
-   - Ajustar configurações se necessário
-   - Coletar feedback do time
+4. **Monitor**
+   - Track first releases
+   - Adjust settings if needed
+   - Collect team feedback
 
-## 🔗 Links Úteis
+## 🔗 Useful Links
 
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Semantic Versioning](https://semver.org/)
 - [Semantic Release](https://semantic-release.gitbook.io/)
 - [GitHub Actions](https://docs.github.com/en/actions)
 
-## 📞 Suporte
+## 📞 Support
 
-Para dúvidas ou problemas:
-1. Consulte [CONTRIBUTING.md](CONTRIBUTING.md)
-2. Consulte [RELEASE.md](RELEASE.md)
-3. Consulte [.github/README.md](.github/README.md)
-4. Abra uma issue no GitHub
+For questions or issues:
+1. Check [CONTRIBUTING.md](CONTRIBUTING.md)
+2. Check [RELEASE.md](RELEASE.md)
+3. Check [.github/README.md](.github/README.md)
+4. Open an issue on GitHub
 
 ---
 
-**Status**: ✅ Implementação Completa e Pronta para Uso!
+**Status**: ✅ Complete Implementation and Ready to Use!

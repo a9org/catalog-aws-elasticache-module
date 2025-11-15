@@ -1,0 +1,37 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Terraform files
+*.tf text eol=lf
+*.tfvars text eol=lf
+
+# Documentation
+*.md text eol=lf
+*.txt text eol=lf
+
+# Scripts
+*.sh text eol=lf
+
+# JSON files
+*.json text eol=lf
+
+# YAML files
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Git configuration
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# Archives
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Exclude files from release archives
+.github export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+.releaserc.json export-ignore
+.commitlintrc.json export-ignore
+CONTRIBUTING.md export-ignore

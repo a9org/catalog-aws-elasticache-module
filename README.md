@@ -1,5 +1,11 @@
 # AWS ElastiCache Terraform Module
 
+[![Release](https://img.shields.io/github/v/release/your-org/aws-elasticache-terraform-module?style=flat-square)](https://github.com/your-org/aws-elasticache-terraform-module/releases)
+[![License](https://img.shields.io/github/license/your-org/aws-elasticache-terraform-module?style=flat-square)](LICENSE)
+[![Terraform](https://img.shields.io/badge/terraform-%3E%3D1.0-blue?style=flat-square)](https://www.terraform.io)
+[![AWS Provider](https://img.shields.io/badge/aws-%3E%3D5.0-orange?style=flat-square)](https://registry.terraform.io/providers/hashicorp/aws/latest)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
+
 A comprehensive, production-ready Terraform module for provisioning AWS ElastiCache clusters (Redis or Memcached) designed for integration with Internal Developer Platforms (IDPs).
 
 ## Features
@@ -301,6 +307,55 @@ See the [examples](./examples) directory for complete working examples:
 3. **Network Access**: The module creates a security group that defaults to allowing access from the VPC CIDR block
 4. **KMS Keys**: Provide a `kms_key_id` when using encryption at rest for better key management
 5. **Subnet Placement**: Ensure `subnets_pvt` are in private subnets without direct internet access
+
+## Versioning
+
+This module follows [Semantic Versioning](https://semver.org/). Releases are automated using [Semantic Release](https://semantic-release.gitbook.io/) based on [Conventional Commits](https://www.conventionalcommits.org/).
+
+### Version Format
+
+- **MAJOR.MINOR.PATCH** (e.g., 1.2.3)
+- **MAJOR**: Breaking changes
+- **MINOR**: New features (backward compatible)
+- **PATCH**: Bug fixes (backward compatible)
+
+### Latest Release
+
+Check the [Releases](https://github.com/your-org/aws-elasticache-terraform-module/releases) page for the latest version and changelog.
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
+
+- Commit message conventions
+- Pull request process
+- Development workflow
+- Code style guidelines
+
+### Quick Start for Contributors
+
+```bash
+# Fork and clone the repository
+git clone https://github.com/your-username/aws-elasticache-terraform-module.git
+
+# Create a feature branch
+git checkout -b feat/my-new-feature
+
+# Make changes and commit using conventional commits
+git commit -m "feat(redis): add new feature"
+
+# Push and create a pull request
+git push origin feat/my-new-feature
+```
+
+## Release Process
+
+Releases are fully automated. See [RELEASE.md](RELEASE.md) for details on:
+
+- How versioning works
+- Commit message format
+- Release workflow
+- Creating pre-releases
 
 ## License
 
