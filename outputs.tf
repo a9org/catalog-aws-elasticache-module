@@ -34,7 +34,7 @@ output "reader_endpoint_address" {
 
 output "port" {
   description = "Port number on which the cache accepts connections"
-  value       = local.is_redis ? coalesce(var.port, 6379) : coalesce(var.port, 11211)
+  value       = local.port_final
 }
 
 
