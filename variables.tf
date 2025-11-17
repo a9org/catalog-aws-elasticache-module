@@ -223,7 +223,7 @@ variable "log_delivery_configuration" {
     log_format       = string
     log_type         = string
   }))
-  default = []
+  default = null
 }
 
 variable "log_delivery_configuration_json" {
@@ -366,7 +366,7 @@ variable "ingress_rules" {
     cidr_blocks = list(string)
     description = string
   }))
-  default = []
+  default = null
 }
 
 variable "ingress_rules_json" {
@@ -378,7 +378,7 @@ variable "ingress_rules_json" {
 variable "additional_security_group_ids" {
   description = "List of additional security group IDs to attach to ElastiCache. Example: ['sg-123456', 'sg-789012']"
   type        = list(string)
-  default     = []
+  default     = null
 }
 
 variable "additional_security_group_ids_json" {
@@ -402,10 +402,10 @@ variable "notification_topic_arn" {
 variable "cloudwatch_log_exports" {
   description = "List of log types to export to CloudWatch. Valid values: 'slow-log', 'engine-log'. Example: ['slow-log', 'engine-log']"
   type        = list(string)
-  default     = []
+  default     = null
 
   validation {
-    condition = alltrue([
+    condition = var.cloudwatch_log_exports == null || alltrue([
       for log_type in var.cloudwatch_log_exports :
       contains(["slow-log", "engine-log"], log_type)
     ])
@@ -440,7 +440,7 @@ variable "preferred_availability_zones_json" {
 variable "tags" {
   description = "Map of custom tags to apply to all resources. Example: {Project = 'MyApp', Team = 'Platform'}"
   type        = map(string)
-  default     = {}
+  default     = null
 }
 
 variable "tags_json" {
@@ -478,7 +478,7 @@ variable "parameters" {
     name  = string
     value = string
   }))
-  default = []
+  default = null
 }
 
 variable "parameters_json" {
@@ -507,7 +507,7 @@ variable "vpc_cidr_block" {
 variable "subnets_pvt" {
   description = "List of private subnet IDs for ElastiCache subnet group. Example: ['subnet-abc123', 'subnet-def456']"
   type        = list(string)
-  default     = []
+  default     = null
 }
 
 variable "subnets_pvt_json" {
