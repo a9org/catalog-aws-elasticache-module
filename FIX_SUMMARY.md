@@ -1,47 +1,82 @@
-# ElastiCache Module - IDP String Variable Fix
+# ElastiCache Module - IDP Dual Input System Fix
 
 ## Problem
-The module was receiving type mismatch errors when called by an IDP that can only pass string and number values. The errors showed:
-- `list of string required, but have string`
-- `map of string required, but have string`
-- `list of object required, but have string`
+The module was receiving "Unsupported argument" errors when called by an IDP:
+- `An argument named "port_str" is not expected here`
+- `An argument named "tags_json" is not expected here`
+- And similar errors for all `_str` and `_json` suffixed variables
 
 ## Root Cause
-The `locals.tf` file was referencing variables with `_json` and `_str` suffixes that didn't exist in `variables.tf`. The conversion logic was trying to fall back to native type variables that also didn't exist.
+The IDP was trying to pass variables with `_str` and `_json` suffixes (like `port_str`, `tags_json`, etc.), but these variables were missing from `variables.tf`. The module was designed to support a dual-input system where IDPs that can only pass strings/numbers could use suffixed alternatives, but the suffixed variable definitions were not present.
 
 ## Solution
-Updated `locals.tf` to work directly with the string variables defined in `variables.tf`:
+Restored the complete dual-input system by:
 
-### Changes Made
+1. **Created `variables-dual-input.tf`** - Added all missing suffixed variables:
+   - Boolean string alternatives: `*_str` (e.g., `cluster_mode_enabled_str`)
+   - Number string alternatives: `*_str` (e.g., `port_str`)
+   - Complex type JSON alternatives: `*_json` (e.g., `tags_json`, `subnets_pvt_json`)
 
-1. **Boolean Conversions** - Now directly parse string variables:
+2. **Updated `locals.tf`** - Implemented proper priority logic:
    ```hcl
-   cluster_mode_enabled_final = var.cluster_mode_enabled != "" ? 
-     contains(["true", "1"], lower(var.cluster_mode_enabled)) : false
+   # Priority: _str/_json suffix → base variable → default
+   cluster_mode_enabled_final = var.cluster_mode_enabled_str != "" ? 
+     contains(["true", "1"], lower(var.cluster_mode_enabled_str)) : 
+     (var.cluster_mode_enabled != "" ? contains(["true", "1"], lower(var.cluster_mode_enabled)) : false)
    ```
 
-2. **Number Conversions** - Parse strings with proper defaults:
-   ```hcl
-   port_final = var.port != "" ? tonumber(var.port) : (local.is_redis ? 6379 : 11211)
-   ```
+3. **Updated `outputs.tf`** - Fixed to use `local.port_final` instead of `var.port`
 
-3. **JSON Conversions** - Decode JSON strings to proper types:
-   ```hcl
-   tags_final = var.tags != "" ? jsondecode(var.tags) : {}
-   subnets_pvt_final = var.subnets_pvt != "" ? jsondecode(var.subnets_pvt) : []
-   ```
+## How the Dual Input System Works
 
-4. **Output Fix** - Updated `outputs.tf` to use `local.port_final` instead of `var.port`
+The module now accepts inputs in TWO ways:
 
-## How It Works
+### Option 1: Native Types (Preferred)
+```hcl
+module "elasticache" {
+  port                     = 6379
+  multi_az_enabled         = true
+  subnets_pvt              = ["subnet-1", "subnet-2"]
+  tags                     = {Project = "MyApp"}
+}
+```
 
-The module now accepts all inputs as strings and converts them internally:
+### Option 2: String/JSON Alternatives (For IDP Limitations)
+```hcl
+module "elasticache" {
+  port_str                 = "6379"
+  multi_az_enabled_str     = "true"
+  subnets_pvt_json         = "[\"subnet-1\",\"subnet-2\"]"
+  tags_json                = "{\"Project\":\"MyApp\"}"
+}
+```
 
-- **Booleans**: Accepts "true", "false", "1", "0", or empty string
-- **Numbers**: Accepts numeric strings like "6379", "3", etc.
-- **Lists/Maps/Objects**: Accepts JSON-encoded strings like `'["subnet-1","subnet-2"]'` or `'{"key":"value"}'`
+## Variable Priority
 
-All resource definitions already use the `_final` local values, so they automatically get the correctly typed values.
+When both versions are provided:
+1. **Suffixed variable is NOT empty** → Uses suffixed variable (converted)
+2. **Suffixed variable is empty** → Uses base variable
+3. **Both empty** → Uses default value
+
+## Supported Conversions
+
+### Boolean Strings (`_str` suffix)
+- Accepts: `"true"`, `"false"`, `"1"`, `"0"` (case-insensitive)
+- Variables: `cluster_mode_enabled_str`, `automatic_failover_enabled_str`, `multi_az_enabled_str`, etc.
+
+### Number Strings (`_str` suffix)
+- Accepts: Numeric strings like `"6379"`, `"3"`, `"7"`
+- Variables: `port_str`, `num_node_groups_str`, `replicas_per_node_group_str`, etc.
+
+### Complex Types (`_json` suffix)
+- Accepts: Valid JSON strings
+- Variables: `tags_json`, `subnets_pvt_json`, `parameters_json`, `ingress_rules_json`, etc.
+
+## Files Modified
+
+1. **variables-dual-input.tf** (NEW) - All suffixed variable definitions
+2. **locals.tf** - Updated conversion logic with proper priority
+3. **outputs.tf** - Fixed port output to use local value
 
 ## Testing
-Run `terraform plan` with string inputs to verify the fix works correctly.
+The module now accepts both native types and string alternatives. IDPs can use whichever format they support.
