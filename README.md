@@ -156,9 +156,10 @@ module "memcached_cache" {
 
 This module is designed to work with Internal Developer Platforms that provide VPC context. The IDP must supply:
 
-1. **vpc_id**: The VPC ID where ElastiCache resources will be deployed
-2. **vpc_cidr_block**: The VPC CIDR block for default security group rules
-3. **subnets_pvt**: List of private subnet IDs for the ElastiCache subnet group
+1. **vpc_id** (required): The VPC ID where ElastiCache resources will be deployed
+2. **vpc_cidr_block** (required): The VPC CIDR block for default security group rules
+3. **subnets_pvt** (required): List of private subnet IDs for the ElastiCache subnet group
+   - Can be passed as native list or JSON string via `subnets_pvt_json`
 
 The module handles all other resource creation including:
 - ElastiCache subnet group
@@ -168,15 +169,23 @@ The module handles all other resource creation including:
 
 ### String-Only Input Support
 
-If your IDP can **ONLY** pass strings and numbers (no booleans, lists, or objects), the module fully supports this limitation through dedicated string input variables:
+If your IDP can **ONLY** pass strings (no booleans, lists, maps, or numbers), the module fully supports this limitation through dedicated string input variables with automatic type conversion:
 
 ```hcl
 module "elasticache" {
   source = "path/to/module"
 
-  # Standard strings
+  # Required IDP variables (strings)
   vpc_id         = "vpc-123"
   vpc_cidr_block = "10.0.0.0/16"
+  
+  # Required core configuration (strings)
+  name_prefix      = "myapp"
+  environment      = "prod"
+  engine           = "redis"
+  engine_version   = "7.0"
+  node_type        = "cache.r6g.large"
+  parameter_family = "redis7"
   
   # Booleans as strings ("true", "false", "1", or "0")
   cluster_mode_enabled_str           = "true"
@@ -196,18 +205,28 @@ module "elasticache" {
   snapshot_retention_limit_str   = "7"
   
   # Complex types as JSON strings
-  subnets_pvt_json = "[\"subnet-abc\",\"subnet-def\"]"
-  tags_json        = "{\"Project\":\"MyApp\",\"Team\":\"Platform\"}"
+  subnets_pvt_json                      = "[\"subnet-abc\",\"subnet-def\"]"
+  tags_json                             = "{\"Project\":\"MyApp\",\"Team\":\"Platform\"}"
+  ingress_cidr_blocks_json              = "[\"10.0.0.0/16\"]"
+  additional_security_group_ids_json    = "[\"sg-123456\"]"
+  parameters_json                       = "[{\"name\":\"maxmemory-policy\",\"value\":\"allkeys-lru\"}]"
+  log_delivery_configuration_json       = "[{\"destination\":\"/aws/elasticache/redis\",\"destination_type\":\"cloudwatch-logs\",\"log_format\":\"json\",\"log_type\":\"slow-log\"}]"
 }
 ```
 
 **String Variable Features:**
 - Boolean strings accept: `"true"`, `"false"`, `"1"`, `"0"` (case-insensitive)
 - Number strings are automatically converted to numbers
-- Empty string defaults to the native variable value
+- JSON strings are parsed into native Terraform types
+- Empty string (`""`) defaults to the native variable value
 - All string variables have validation to ensure correct format
+- Every complex type has both native and JSON string variants
 
-See [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) and [examples/idp-string-only/](examples/idp-string-only/) for complete details.
+**Variable Naming Convention:**
+- Native variables: `variable_name` (e.g., `cluster_mode_enabled`, `subnets_pvt`)
+- String alternatives: `variable_name_str` or `variable_name_json` (e.g., `cluster_mode_enabled_str`, `subnets_pvt_json`)
+
+See [IDP_VARIABLES_GUIDE.md](IDP_VARIABLES_GUIDE.md) for complete IDP integration details and [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) for string input examples.
 
 ## Requirements
 
@@ -237,90 +256,97 @@ See [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) and [examples/idp-string-only
 
 ## Inputs
 
-### IDP-Provided Variables
+### IDP-Provided Variables (REQUIRED)
 
-| Name | Description | Type | Required |
-|------|-------------|------|----------|
-| vpc_id | VPC ID provided by IDP where ElastiCache resources will be deployed | `string` | yes |
-| vpc_cidr_block | VPC CIDR block provided by IDP for default security group ingress rules | `string` | yes |
-| subnets_pvt | List of private subnet IDs provided by IDP for ElastiCache subnet group | `list(string)` | yes |
+| Name | Description | Type | String Alternative | Required |
+|------|-------------|------|-------------------|----------|
+| vpc_id | VPC ID where ElastiCache resources will be deployed | `string` | n/a | yes |
+| vpc_cidr_block | VPC CIDR block for default security group ingress rules | `string` | n/a | yes |
+| subnets_pvt | List of private subnet IDs for ElastiCache subnet group | `list(string)` | `subnets_pvt_json` | yes* |
 
-### Core Configuration Variables
+*Either `subnets_pvt` or `subnets_pvt_json` must be provided.
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
+### Core Configuration Variables (REQUIRED)
+
+| Name | Description | Type | String Alternative | Required |
+|------|-------------|------|-------------------|----------|
 | name_prefix | Prefix for resource names | `string` | n/a | yes |
-| environment | Environment name (e.g., dev, staging, prod) | `string` | n/a | yes |
-| engine | Cache engine type (redis or memcached) | `string` | n/a | yes |
+| environment | Environment name (e.g., 'dev', 'staging', 'prod') | `string` | n/a | yes |
+| engine | Cache engine type - must be 'redis' or 'memcached' | `string` | n/a | yes |
 | engine_version | Version number of the cache engine | `string` | n/a | yes |
-| node_type | Instance type for cache nodes (e.g., cache.t3.micro, cache.r6g.large) | `string` | n/a | yes |
-| parameter_family | Family of the ElastiCache parameter group (e.g., redis7, memcached1.6) | `string` | n/a | yes |
-| port | Port number on which the cache accepts connections | `number` | `null` (6379 for Redis, 11211 for Memcached) | no |
-| description | Description for the ElastiCache cluster or replication group | `string` | `"Managed by Terraform"` | no |
+| node_type | Instance type for cache nodes | `string` | n/a | yes |
+| parameter_family | Family of the ElastiCache parameter group | `string` | n/a | yes |
+
+### Optional Core Configuration
+
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| port | Port number on which the cache accepts connections | `number` | `null` (auto: 6379/11211) | `port_str` |
+| description | Description for the ElastiCache cluster | `string` | `"Managed by Terraform"` | n/a |
 
 ### Redis-Specific Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| cluster_mode_enabled | Enable Redis cluster mode (sharding) | `bool` | `false` | no |
-| num_node_groups | Number of node groups (shards) for Redis cluster mode | `number` | `1` | no |
-| replicas_per_node_group | Number of replica nodes per node group (shard) | `number` | `0` | no |
-| automatic_failover_enabled | Enable automatic failover for Redis replication groups | `bool` | `false` | no |
-| multi_az_enabled | Enable multi-AZ deployment for Redis | `bool` | `false` | no |
-| auth_token | Password used to access a password protected Redis server (requires transit_encryption_enabled = true) | `string` | `null` | no |
-| transit_encryption_enabled | Enable encryption in transit (TLS) for Redis | `bool` | `false` | no |
-| at_rest_encryption_enabled | Enable encryption at rest for Redis | `bool` | `false` | no |
-| kms_key_id | ARN of the KMS key to use for encryption at rest | `string` | `null` | no |
-| data_tiering_enabled | Enable data tiering for Redis (r6gd node types) | `bool` | `false` | no |
-| log_delivery_configuration | List of log delivery configurations for Redis | `list(object)` | `[]` | no |
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| cluster_mode_enabled | Enable Redis cluster mode (sharding) | `bool` | `false` | `cluster_mode_enabled_str` |
+| num_node_groups | Number of node groups (shards) for cluster mode | `number` | `1` | `num_node_groups_str` |
+| replicas_per_node_group | Number of replica nodes per node group/shard | `number` | `0` | `replicas_per_node_group_str` |
+| automatic_failover_enabled | Enable automatic failover for replication groups | `bool` | `false` | `automatic_failover_enabled_str` |
+| multi_az_enabled | Enable multi-AZ deployment | `bool` | `false` | `multi_az_enabled_str` |
+| auth_token | Password for Redis AUTH (requires transit encryption) | `string` | `null` | n/a |
+| transit_encryption_enabled | Enable encryption in transit (TLS) | `bool` | `false` | `transit_encryption_enabled_str` |
+| at_rest_encryption_enabled | Enable encryption at rest | `bool` | `false` | `at_rest_encryption_enabled_str` |
+| kms_key_id | ARN of KMS key for encryption at rest | `string` | `null` | n/a |
+| data_tiering_enabled | Enable data tiering (requires r6gd node types) | `bool` | `false` | `data_tiering_enabled_str` |
+| log_delivery_configuration | List of log delivery configurations | `list(object)` | `[]` | `log_delivery_configuration_json` |
 
 ### Memcached-Specific Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| num_cache_nodes | Number of cache nodes for Memcached cluster | `number` | `1` | no |
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| num_cache_nodes | Number of cache nodes for Memcached cluster | `number` | `1` | `num_cache_nodes_str` |
 
 ### Backup and Maintenance Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| snapshot_retention_limit | Number of days to retain automatic snapshots (Redis only, 0 to disable) | `number` | `0` | no |
-| snapshot_window | Daily time range during which automated backups are created (e.g., 05:00-09:00) | `string` | `null` | no |
-| maintenance_window | Weekly time range for system maintenance (e.g., sun:05:00-sun:09:00) | `string` | `null` | no |
-| final_snapshot_identifier | Name of the final snapshot created when the cluster is deleted | `string` | `null` | no |
-| snapshot_arns | List of snapshot ARNs to restore from (Redis only) | `list(string)` | `null` | no |
-| auto_minor_version_upgrade | Enable automatic minor version upgrades during maintenance window | `bool` | `true` | no |
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| snapshot_retention_limit | Days to retain automatic snapshots (0 = disabled) | `number` | `0` | `snapshot_retention_limit_str` |
+| snapshot_window | Daily time range for automated backups | `string` | `null` | n/a |
+| maintenance_window | Weekly time range for system maintenance | `string` | `null` | n/a |
+| final_snapshot_identifier | Name of final snapshot when cluster is deleted | `string` | `null` | n/a |
+| snapshot_arns | List of snapshot ARNs to restore from (Redis only) | `list(string)` | `null` | `snapshot_arns_json` |
+| auto_minor_version_upgrade | Enable automatic minor version upgrades | `bool` | `true` | `auto_minor_version_upgrade_str` |
 
 ### Network and Security Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| security_group_name | Name for the ElastiCache security group (auto-generated if not provided) | `string` | `null` | no |
-| security_group_description | Description for the ElastiCache security group | `string` | `"Security group for ElastiCache cluster"` | no |
-| ingress_cidr_blocks | List of CIDR blocks allowed to access ElastiCache (defaults to VPC CIDR) | `list(string)` | `null` | no |
-| ingress_rules | List of custom ingress rules for the security group | `list(object)` | `[]` | no |
-| additional_security_group_ids | List of additional security group IDs to attach to ElastiCache | `list(string)` | `[]` | no |
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| security_group_name | Name for the ElastiCache security group | `string` | `null` (auto-generated) | n/a |
+| security_group_description | Description for the security group | `string` | `"Security group for ElastiCache cluster"` | n/a |
+| ingress_cidr_blocks | List of CIDR blocks allowed to access ElastiCache | `list(string)` | `null` (defaults to VPC CIDR) | `ingress_cidr_blocks_json` |
+| ingress_rules | List of custom ingress rules | `list(object)` | `[]` | `ingress_rules_json` |
+| additional_security_group_ids | Additional security group IDs to attach | `list(string)` | `[]` | `additional_security_group_ids_json` |
 
 ### Monitoring and Notification Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| notification_topic_arn | ARN of SNS topic for ElastiCache notifications | `string` | `null` | no |
-| cloudwatch_log_exports | List of log types to export to CloudWatch (slow-log, engine-log) | `list(string)` | `[]` | no |
-| preferred_availability_zones | List of preferred availability zones for cache node placement | `list(string)` | `null` | no |
-
-### Parameter Group Variables
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| create_parameter_group | Whether to create a custom parameter group | `bool` | `false` | no |
-| parameters | List of parameter objects for custom parameter group configuration | `list(object)` | `[]` | no |
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| notification_topic_arn | ARN of SNS topic for ElastiCache notifications | `string` | `null` | n/a |
+| cloudwatch_log_exports | Log types to export to CloudWatch | `list(string)` | `[]` | `cloudwatch_log_exports_json` |
+| preferred_availability_zones | Preferred AZs for cache node placement | `list(string)` | `null` | `preferred_availability_zones_json` |
 
 ### Tagging Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|----------|
-| tags | Map of custom tags to apply to all resources | `map(string)` | `{}` | no |
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| tags | Map of custom tags to apply to all resources | `map(string)` | `{}` | `tags_json` |
+
+### Parameter Group Variables
+
+| Name | Description | Type | Default | String Alternative |
+|------|-------------|------|---------|-------------------|
+| create_parameter_group | Whether to create a custom parameter group | `bool` | `false` | `create_parameter_group_str` |
+| parameters | List of parameter objects for configuration | `list(object)` | `[]` | `parameters_json` |
 
 ## Outputs
 

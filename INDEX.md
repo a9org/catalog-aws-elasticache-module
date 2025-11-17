@@ -9,7 +9,9 @@ Complete navigation guide for AWS ElastiCache Terraform module documentation.
 | [README.md](README.md) | Main module documentation | First read, usage reference |
 | [SETUP.md](SETUP.md) | Initial setup guide | Setting up environment for first time |
 | [CI_CD_SUMMARY.md](CI_CD_SUMMARY.md) | CI/CD implementation summary | Understanding what was implemented |
-| [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) | JSON string input guide | When IDP requires string inputs |
+| [IDP_VARIABLES_GUIDE.md](IDP_VARIABLES_GUIDE.md) | IDP variables reference | Complete variable reference for IDPs |
+| [VARIABLES_FLOW.md](VARIABLES_FLOW.md) | Variables flow diagram | Shows which variables resources actually read |
+| [STRING_INPUT_GUIDE.md](STRING_INPUT_GUIDE.md) | String input technical guide | Technical details on string conversion |
 
 ## 👥 For Contributors
 
